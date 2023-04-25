@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/models/meal.dart';
-import 'package:meals_app/screens/meal_detail.dart';
 import 'package:meals_app/widgets/meal_item_trait.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class MealItem extends StatelessWidget {
-  const MealItem({super.key, required this.meal});
+  const MealItem({super.key, required this.meal, required this.onSelectMeal});
 
   final Meal meal;
 
@@ -17,14 +16,7 @@ class MealItem extends StatelessWidget {
     return meal.affordability.name[0].toUpperCase() + meal.affordability.name.substring(1);
   }
 
-  void _selectMeal(BuildContext context, Meal meal) {
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (ctx) => MealDetailScreen(meal: meal),
-        ));
-  }
+  final void Function(Meal meal) onSelectMeal;
 
 
   @override
@@ -36,7 +28,7 @@ class MealItem extends StatelessWidget {
       elevation: 2,
       child: InkWell(
         onTap: () {
-          _selectMeal(context, meal);
+          onSelectMeal(meal);
         },
         child: Stack(
           children: [
