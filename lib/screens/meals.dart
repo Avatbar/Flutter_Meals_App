@@ -5,9 +5,9 @@ import '../models/meal.dart';
 import 'meal_detail.dart';
 
 class MealScreen extends StatelessWidget {
-  const MealScreen({super.key, required this.title, required this.meals});
+  const MealScreen({super.key, this.title, required this.meals});
 
-  final String title;
+  final String? title;
   final List<Meal> meals;
 
   void _selectMeal(BuildContext context, Meal meal) {
@@ -41,9 +41,10 @@ class MealScreen extends StatelessWidget {
                   ),
             ),
             Text(
-              title,
+              title == null ? "Favorite" : title!,
               style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onError,
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(
@@ -60,9 +61,13 @@ class MealScreen extends StatelessWidget {
       );
     }
 
+    if (title == null) {
+      return content;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(title!),
       ),
       body: content,
     );
