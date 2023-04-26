@@ -5,16 +5,24 @@ import '../models/meal.dart';
 import 'meal_detail.dart';
 
 class MealScreen extends StatelessWidget {
-  const MealScreen({super.key, this.title, required this.meals});
+  const MealScreen(
+      {super.key,
+      this.title,
+      required this.meals,
+      required this.onToggleFavorite});
 
   final String? title;
   final List<Meal> meals;
+  final void Function(Meal meal) onToggleFavorite;
 
   void _selectMeal(BuildContext context, Meal meal) {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (ctx) => MealDetailScreen(meal: meal),
+          builder: (ctx) => MealDetailScreen(
+            meal: meal,
+            onToggleFavorite: onToggleFavorite,
+          ),
         ));
   }
 
@@ -35,7 +43,7 @@ class MealScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "No recipes for",
+              "No recipes in",
               style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                     color: Theme.of(context).colorScheme.onBackground,
                   ),
