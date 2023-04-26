@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/screens/categories.dart';
+import 'package:meals_app/screens/filters.dart';
 import 'package:meals_app/screens/meals.dart';
 import 'package:meals_app/widgets/main_drawer.dart';
 
@@ -47,6 +48,14 @@ void _selectPage(int index) {
   });
 }
 
+void _setScreen(String identifier) {
+  Navigator.of(context).pop();
+    if (identifier == "filters") {
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (ctx) => const FilterScreen()));
+    }
+}
+
 @override
 Widget build(BuildContext context) {
   Widget activePage = CategoriesScreen(
@@ -64,7 +73,7 @@ Widget build(BuildContext context) {
     appBar: AppBar(
       title: Text(activePageTitle),
     ),
-    drawer: const MainDrawer(),
+    drawer: MainDrawer(onSelectScreen: _setScreen,),
     body: activePage,
     bottomNavigationBar: BottomNavigationBar(
       onTap: _selectPage,
