@@ -10,6 +10,21 @@ enum Affordability {
   luxurious,
 }
 
+extension Stringifier on Affordability {
+  String stringify() {
+    switch (this) {
+      case Affordability.affordable:
+        return 'Affordable';
+      case Affordability.pricey:
+        return 'Pricey';
+      case Affordability.luxurious:
+        return 'Luxurious';
+      default:
+        return 'Unknown';
+    }
+  }
+}
+
 class Meal {
   const Meal({
     required this.id,

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/providers/favorites_provider.dart';
@@ -55,10 +56,10 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       );
       activePageTitle = "Your Favorites";
     }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(activePageTitle),
+        actions: [IconButton(onPressed: () => FirebaseAuth.instance.signOut(), icon: const Icon(Icons.logout))],
       ),
       drawer: MainDrawer(
         onSelectScreen: _setScreen,
