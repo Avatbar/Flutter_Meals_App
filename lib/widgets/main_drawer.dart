@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -9,6 +10,7 @@ class MainDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DrawerHeader(
             padding: const EdgeInsets.all(20),
@@ -65,13 +67,22 @@ class MainDrawer extends StatelessWidget {
             title: Text(
               "Filters",
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             ),
             onTap: () {
               onSelectScreen("filters");
             },
           ),
+          const Spacer(),
+          IconButton(
+              iconSize: 32,
+              onPressed: () => FirebaseAuth.instance.signOut(),
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all<Color>(
+                    Theme.of(context).colorScheme.primary),
+              ),
+              icon: const Icon(Icons.logout)),
         ],
       ),
     );

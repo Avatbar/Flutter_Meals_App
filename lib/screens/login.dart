@@ -34,9 +34,10 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
 
-    if (password != confirmPassword) {
+    if (!isLoginScreen && password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          duration: const Duration(seconds: 1),
           content: const Text("Passwords do not match!"),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),

@@ -10,7 +10,22 @@ enum Affordability {
   luxurious,
 }
 
-extension Stringifier on Affordability {
+extension ComplexStringifier on Complexity {
+  String stringify() {
+    switch (this) {
+      case Complexity.simple:
+        return 'Simple';
+      case Complexity.challenging:
+        return 'Challenging';
+      case Complexity.hard:
+        return 'Hard';
+      default:
+        return 'Unknown';
+    }
+  }
+}
+
+extension AffordablStringifier on Affordability {
   String stringify() {
     switch (this) {
       case Affordability.affordable:
@@ -26,7 +41,7 @@ extension Stringifier on Affordability {
 }
 
 class Meal {
-  const Meal({
+   Meal({
     required this.id,
     required this.categories,
     required this.title,
@@ -43,6 +58,7 @@ class Meal {
   });
 
   final String id;
+  bool approved = false;
   final List<String> categories;
   final String title;
   final String imageUrl;
@@ -55,4 +71,9 @@ class Meal {
   final bool isLactoseFree;
   final bool isVegan;
   final bool isVegetarian;
+
+  bool get isApproved => approved;
+  void setApproved(bool value) {
+    approved = value;
+  }
 }
