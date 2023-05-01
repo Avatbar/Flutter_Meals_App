@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/providers/favorites_provider.dart';
+import 'package:meals_app/screens/add_meal.dart';
 
 import 'package:meals_app/screens/categories.dart';
 import 'package:meals_app/screens/filters.dart';
@@ -38,6 +39,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       await Navigator.of(context).push(
           MaterialPageRoute(builder: (ctx) => const FilterScreen())
       );
+      ref.read(filtersProvider.notifier).setFilters();
     }
   }
 
@@ -72,6 +74,17 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
             }
           )
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddMealScreen(),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
       drawer: MainDrawer(
         onSelectScreen: _setScreen,

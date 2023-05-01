@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,10 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(
           duration: const Duration(seconds: 1),
           content: const Text("Passwords do not match!"),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .error,
         ),
       );
 
@@ -51,15 +55,46 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       if (isLoginScreen) {
+        final entry = await FirebaseFirestore.instance
+            .collection('Users')
+            .where('email', isEqualTo: email)
+            .get();
+        if (entry.docs.first.data()['isAdmin'] as bool && _selectedUser[0] ||
+            !entry.docs.first.data()['isAdmin'] && _selectedUser[1]) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: const Duration(seconds: 1),
+              content: const Text("Wrong user type!"),
+              backgroundColor: Theme
+                  .of(context)
+                  .colorScheme
+                  .error,
+            ),
+          );
+          return;
+        }
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
       } else {
+        final response =
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(response.user!.uid)
+            .set({
+          'email': email,
+          'isAdmin': false,
+          'userFavoriteMeals': [],
+          "glutenFree": false,
+          "lactoseFree": false,
+          "vegetarian": false,
+          "vegan": false,
+        });
       }
     } on FirebaseAuthException catch (error) {
       var message = "An error occurred, please check your credentials!";
@@ -71,7 +106,10 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .error,
         ),
       );
 
@@ -90,44 +128,59 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+              textStyle: const TextStyle(fontSize: 16),
+            ),
+            onPressed: () {
+              setState(() {
+                isLoginScreen = !isLoginScreen;
+              });
+            },
+            child: Text(isLoginScreen ? "Sign Up" : "Sign In"),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  textStyle: const TextStyle(fontSize: 16),
-                ),
-                onPressed: () {
-                  setState(() {
-                    isLoginScreen = !isLoginScreen;
-                  });
-                },
-                child: Text(isLoginScreen ? "Sign Up" : "Sign In"),
-              ),
-            ),
             if (isLoginScreen)
               Text(
                 _selectedUser[0] ? "Login" : "Admin Login",
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 40,
-                    ),
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 40,
+                ),
               )
             else
               Text(
                 "Register",
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 40,
-                    ),
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 40,
+                ),
               ),
             if (isLoginScreen)
               ToggleButtons(
@@ -155,9 +208,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     TextFormField(
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .onBackground,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Please enter an email";
@@ -176,9 +236,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .onBackground,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Please enter a password";
@@ -196,13 +263,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         labelText: "Password",
                       ),
                     ),
-                    if (!isLoginScreen)
-                      const SizedBox(height: 10),
+                    if (!isLoginScreen) const SizedBox(height: 10),
                     if (!isLoginScreen)
                       TextFormField(
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                              color: Theme.of(context).colorScheme.onBackground,
-                            ),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(
+                          color: Theme
+                              .of(context)
+                              .colorScheme
+                              .onBackground,
+                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Please enter a password";
@@ -241,11 +314,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     )),
                 child: Text(
                   isLoginScreen ? "Login" : "Register",
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                      ),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                  ),
                 ),
               ),
             const SizedBox(height: 12),

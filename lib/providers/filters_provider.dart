@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/providers/meals_provider.dart';
 
@@ -10,8 +12,16 @@ enum Filter {
   vegan,
 }
 
+
 class FilterNotifier extends StateNotifier<Map<Filter, bool>> {
-  FilterNotifier() : super(kInitialFilter);
+  FilterNotifier() : super(kInitialFilter) {
+    FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((value) => state = {
+      Filter.glutenFree: value.data()!['glutenFree'] as bool,
+      Filter.lactoseFree: value.data()!['lactoseFree'] as bool,
+      Filter.vegetarian: value.data()!['vegetarian'] as bool,
+      Filter.vegan: value.data()!['vegan'] as bool,
+    });
+  }
 
   void setFilter(Filter filter, bool isActive) {
     state = {
@@ -20,8 +30,13 @@ class FilterNotifier extends StateNotifier<Map<Filter, bool>> {
     };
   }
 
-  void setFilters(Map<Filter, bool> chosenFilters) {
-    state = chosenFilters;
+  void setFilters() {
+    FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).update({
+      'glutenFree': state[Filter.glutenFree],
+      'lactoseFree': state[Filter.lactoseFree],
+      'vegetarian': state[Filter.vegetarian],
+      'vegan': state[Filter.vegan],
+    });
   }
 }
 

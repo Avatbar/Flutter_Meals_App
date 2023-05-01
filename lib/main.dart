@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meals_app/screens/adminScreen.dart';
 import 'package:meals_app/screens/login.dart';
 import 'package:meals_app/screens/tabs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,9 +54,9 @@ class App extends StatelessWidget {
                 }
                 if (snapshot.hasData) {
                   if (snapshot.data as bool) {
-                    return const TabsScreen();
+                    return const AdminScreen();
                   } else {
-                    return const LoginScreen();
+                    return const TabsScreen();
                   }
                 }
                 return const LoginScreen();
