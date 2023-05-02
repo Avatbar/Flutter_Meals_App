@@ -84,6 +84,8 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
             ),
           );
         },
+        backgroundColor: Colors.lightBlueAccent,
+        splashColor: Colors.blueAccent,
         child: const Icon(Icons.add),
       ),
       drawer: MainDrawer(
@@ -104,6 +106,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
