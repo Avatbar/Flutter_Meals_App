@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:meals_app/models/category.dart';
@@ -24,5 +26,30 @@ class Utility {
     }
 
     return categories;
+  }
+
+  bool uploadMeal(
+      {required String title,
+      required List<String> ingredients,
+      required List<String> steps,
+      required int duration,
+      required File image,
+      required List<Category> categories},
+      required
+  ) {
+    try {
+      FirebaseFirestore.instance.collection('Meals').add({
+        'title': title,
+        'ingredients': ingredients,
+        'steps': steps,
+        'duration': duration,
+        'image': image,
+        'categories': categories,
+      });
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 }

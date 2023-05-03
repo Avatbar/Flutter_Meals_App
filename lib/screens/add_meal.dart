@@ -1,7 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:meals_app/pickers/user_image_picker.dart';
+
 import 'package:meals_app/widgets/new_meal_form.dart';
 
 class AddMealScreen extends StatefulWidget {
@@ -12,12 +10,6 @@ class AddMealScreen extends StatefulWidget {
 }
 
 class _AddMealScreenState extends State<AddMealScreen> {
-  late File _userImageFile;
-
-  void _pickedImage(File pickedImage) {
-    _userImageFile = pickedImage;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,11 +29,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
             const SizedBox(
               height: 30,
             ),
-            UserImagePicker(imagePickFn: _pickedImage),
-            const SizedBox(
-              height: 30,
-            ),
-            const NewMealForm(),
+            NewMealForm(),
           ],
         ),
       ),
