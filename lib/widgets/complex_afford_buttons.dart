@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 class ComplexAffordButtons extends StatefulWidget {
-  const ComplexAffordButtons({super.key});
+  const ComplexAffordButtons({super.key, required this.selectedComplexity, required this.selectedAffordability});
+
+  final List<bool> selectedComplexity;
+  final List<bool> selectedAffordability;
 
   @override
   State<ComplexAffordButtons> createState() => _ComplexAffordButtonsState();
 }
 
 class _ComplexAffordButtonsState extends State<ComplexAffordButtons> {
-  final List<bool> _selectedComplexity = <bool>[true, false, false];
-  final List<bool> _selectedAffordability = <bool>[true, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +21,8 @@ class _ComplexAffordButtonsState extends State<ComplexAffordButtons> {
             onPressed: (int index) {
               setState(() {
                 // The button that is tapped is set to true, and the others to false.
-                for (int i = 0; i < _selectedComplexity.length; i++) {
-                  _selectedComplexity[i] = i == index;
+                for (int i = 0; i < widget.selectedComplexity.length; i++) {
+                  widget.selectedComplexity[i] = i == index;
                 }
               });
             },
@@ -30,7 +31,7 @@ class _ComplexAffordButtonsState extends State<ComplexAffordButtons> {
             selectedColor: Colors.black,
             fillColor: Colors.blue[200],
             color: Colors.blue[400],
-            isSelected: _selectedComplexity,
+            isSelected: widget.selectedComplexity,
             children: const <Widget>[
               Text("Easy"),
               Text("Medium"),
@@ -41,8 +42,8 @@ class _ComplexAffordButtonsState extends State<ComplexAffordButtons> {
             onPressed: (int index) {
               setState(() {
                 // The button that is tapped is set to true, and the others to false.
-                for (int i = 0; i < _selectedAffordability.length; i++) {
-                  _selectedAffordability[i] = i == index;
+                for (int i = 0; i < widget.selectedAffordability.length; i++) {
+                  widget.selectedAffordability[i] = i == index;
                 }
               });
             },
@@ -51,7 +52,7 @@ class _ComplexAffordButtonsState extends State<ComplexAffordButtons> {
             selectedColor: Colors.black,
             fillColor: Colors.blue[200],
             color: Colors.blue[400],
-            isSelected: _selectedAffordability,
+            isSelected: widget.selectedAffordability,
             children: const <Widget>[
               Text("€"),
               Text("€€"),

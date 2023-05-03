@@ -1,8 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:meals_app/models/category.dart';
+
+import '../models/meal_database.dart';
 
 class Utility {
   Future<List<Category>> getCategoriesFromDatabase() async {
@@ -28,27 +28,50 @@ class Utility {
     return categories;
   }
 
-  bool uploadMeal(
-      {required String title,
-      required List<String> ingredients,
-      required List<String> steps,
-      required int duration,
-      required File image,
-      required List<Category> categories},
-      required
-  ) {
+  bool uploadMeal(MealDatabase meal) {
     try {
       FirebaseFirestore.instance.collection('Meals').add({
-        'title': title,
-        'ingredients': ingredients,
-        'steps': steps,
-        'duration': duration,
-        'image': image,
-        'categories': categories,
+        'title': meal.title,
+        'image': meal.image,
+        'duration': meal.duration,
+        'ingredients': meal.ingredients,
+        'steps': meal.steps,
+        'categories': meal.categories,
+        'complexity': meal.complexity.stringify(),
+        'affordability': meal.affordability.stringify(),
+        'isGlutenFree': meal.isGlutenFree,
+        'isLactoseFree': meal.isLactoseFree,
+        'isVegan': meal.isVegan,
+        'isVegetarian': meal.isVegetarian,
+        'approved': meal.approved,
+        'creatorID': meal.creatorID,
       });
       return true;
     } catch (e) {
-      print(e);
+      return false;
+    }
+  }
+
+  bool editMeal(MealDatabase meal) {
+    try {
+      FirebaseFirestore.instance.collection('Meals').doc(meal.id).update({
+        'title': meal.title,
+        'image': meal.image,
+        'duration': meal.duration,
+        'ingredients': meal.ingredients,
+        'steps': meal.steps,
+        'categories': meal.categories,
+        'complexity': meal.complexity.stringify(),
+        'affordability': meal.affordability.stringify(),
+        'isGlutenFree': meal.isGlutenFree,
+        'isLactoseFree': meal.isLactoseFree,
+        'isVegan': meal.isVegan,
+        'isVegetarian': meal.isVegetarian,
+        'approved': meal.approved,
+        'creatorID': meal.creatorID,
+      });
+      return true;
+    } catch (e) {
       return false;
     }
   }

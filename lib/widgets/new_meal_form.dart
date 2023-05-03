@@ -1,7 +1,8 @@
-import 'dart:ffi';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:meals_app/models/meal_database.dart';
 
 import '../models/category.dart';
 import '../utility/utility.dart';
@@ -27,6 +28,9 @@ class _NewMealFormState extends State<NewMealForm> {
 
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
+
+  final List<bool> _selectedComplexity = <bool>[true, false, false];
+  final List<bool> _selectedAffordability = <bool>[true, false, false];
 
   void _pickedImage(File pickedImage) {
     _userImageFile = pickedImage;
@@ -62,7 +66,7 @@ class _NewMealFormState extends State<NewMealForm> {
     return true;
   }
 
-  void _mapCategoires() async{
+  void _mapCategoires() async {
     final categories = await Utility().getCategoriesFromDatabase();
     if (categories.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -86,6 +90,30 @@ class _NewMealFormState extends State<NewMealForm> {
     }
   }
 
+  Complexity getComplexity() {
+    switch (_selectedComplexity.indexOf(true)){
+      case 0:
+        return Complexity.simple;
+      case 1:
+        return Complexity.challenging;
+      case 2:
+        return Complexity.hard;
+    }
+    return Complexity.simple;
+  }
+
+  Affordability getAffordability() {
+    switch (_selectedAffordability.indexOf(true)){
+      case 0:
+        return Affordability.affordable;
+      case 1:
+        return Affordability.pricey;
+      case 2:
+        return Affordability.luxurious;
+    }
+    return Affordability.affordable;
+  }
+
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
     if (!isValid) {
@@ -103,6 +131,33 @@ class _NewMealFormState extends State<NewMealForm> {
 
     _mapCategoires();
 
+    final selectedCategoriesList = <String>[];
+    selectedCategoriesMap.forEach((key, value) {
+      if (value) {
+        selectedCategoriesList.add(key.id);
+      }
+    });
+
+    final newMeal = MealDatabase(id: "new",
+      categories: selectedCategoriesList,
+      title: title,
+      image: _userImageFile!,
+      ingredients: ingredients,
+      steps: steps,
+      duration: duration,
+      complexity: getComplexity(),
+      affordability: getAffordability(),
+      isGlutenFree: false,
+      isLactoseFree: false,
+      isVegan: false,
+      isVegetarian: false,
+      creatorID: FirebaseAuth.instance.currentUser!.uid,);
+
+    Utility().uploadMeal(newMeal);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -123,14 +178,21 @@ class _NewMealFormState extends State<NewMealForm> {
                 const SizedBox(
                   height: 30,
                 ),
-                const ComplexAffordButtons(),
+                ComplexAffordButtons(selectedAffordability: _selectedAffordability, selectedComplexity: _selectedComplexity,),
                 const SizedBox(
                   height: 20,
                 ),
                 TextFormField(
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onBackground,
+                  ),
                   decoration: const InputDecoration(labelText: "Title"),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -144,9 +206,16 @@ class _NewMealFormState extends State<NewMealForm> {
                   textInputAction: TextInputAction.next,
                 ),
                 TextFormField(
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onBackground,
+                  ),
                   decoration: const InputDecoration(labelText: "Ingredients"),
                   textInputAction: TextInputAction.newline,
                   keyboardType: TextInputType.multiline,
@@ -155,7 +224,9 @@ class _NewMealFormState extends State<NewMealForm> {
                     if (value!.isEmpty) {
                       return "Please enter ingredients.";
                     }
-                    if (value.split(",").length < 3) {
+                    if (value
+                        .split(",")
+                        .length < 3) {
                       return "Please enter at least 3 ingredients.";
                     }
                     if (!value.contains(',')) {
@@ -168,9 +239,16 @@ class _NewMealFormState extends State<NewMealForm> {
                   },
                 ),
                 TextFormField(
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onBackground,
+                  ),
                   decoration: const InputDecoration(labelText: "Steps"),
                   textInputAction: TextInputAction.newline,
                   keyboardType: TextInputType.multiline,
@@ -179,7 +257,9 @@ class _NewMealFormState extends State<NewMealForm> {
                     if (value!.isEmpty) {
                       return "Please enter steps.";
                     }
-                    if (value.split("\n").length < 3) {
+                    if (value
+                        .split("\n")
+                        .length < 3) {
                       return "Please enter at least 3 steps.";
                     }
                     if (!value.contains('\n')) {
@@ -192,9 +272,16 @@ class _NewMealFormState extends State<NewMealForm> {
                   },
                 ),
                 TextFormField(
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onBackground,
+                  ),
                   decoration: const InputDecoration(labelText: "Duration"),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -219,9 +306,16 @@ class _NewMealFormState extends State<NewMealForm> {
                 ),
                 Text(
                   "Select Categories",
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.onBackground,
-                      ),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(
+                    color: Theme
+                        .of(context)
+                        .colorScheme
+                        .onBackground,
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -231,9 +325,7 @@ class _NewMealFormState extends State<NewMealForm> {
                     selectedCategories: selectedCategories),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    print(selectedCategoriesMap);
-                  },
+                  onPressed: _submit,
                   child: const Text("Add Meal"),
                 ),
               ],
