@@ -10,6 +10,8 @@ import 'package:meals_app/screens/user.dart';
 import 'package:meals_app/widgets/main_drawer.dart';
 import 'package:meals_app/providers/filters_provider.dart';
 
+import '../models/meal_database.dart';
+
 const kInitialFilter = {
   Filter.glutenFree: false,
   Filter.lactoseFree: false,
@@ -36,19 +38,27 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   void _setScreen(String identifier) async {
     Navigator.of(context).pop();
     if (identifier == "filters") {
-      await Navigator.of(context).push(
-          MaterialPageRoute(builder: (ctx) => const FilterScreen())
-      );
+      await Navigator.of(context)
+          .push(MaterialPageRoute(builder: (ctx) => const FilterScreen()));
       ref.read(filtersProvider.notifier).setFilters();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final availableMeals = ref.watch(filteredMealsProvider);
-
-    Widget activePage =
-        CategoriesScreen(availableMeals: availableMeals,);
+    Widget activePage = FutureBuilder(
+        future: ref.watch(filteredMealsProvider),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          print(snapshot.data.toString());
+          return CategoriesScreen(
+            availableMeals: snapshot.data as List<MealDatabase>,
+          );
+        });
     var activePageTitle = "Categories";
 
     if (_selectedPageIndex == 1) {
@@ -63,16 +73,15 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
         title: Text(activePageTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const UserScreen(),
-                ),
-              );
-            }
-          )
+              icon: const Icon(Icons.person),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UserScreen(),
+                  ),
+                );
+              })
         ],
       ),
       floatingActionButton: FloatingActionButton(

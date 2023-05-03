@@ -44,10 +44,10 @@ final filtersProvider =
     StateNotifierProvider<FilterNotifier, Map<Filter, bool>>(
         (ref) => FilterNotifier());
 
-final filteredMealsProvider = Provider((ref) {
-  final meals = ref.watch(mealsProvider);
+final filteredMealsProvider = Provider((ref) async {
+  final meals = await ref.watch(mealsProvider);
   final activeFilters = ref.watch(filtersProvider);
-
+  print(meals);
   return meals.where((meal) {
     if (activeFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
       return false;

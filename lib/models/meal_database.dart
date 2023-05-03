@@ -27,6 +27,21 @@ extension ComplexStringifier on Complexity {
   }
 }
 
+extension ComplexParser on String {
+  Complexity parseComplexity() {
+    switch (this) {
+      case 'Simple':
+        return Complexity.simple;
+      case 'Challenging':
+        return Complexity.challenging;
+      case 'Hard':
+        return Complexity.hard;
+      default:
+        return Complexity.simple;
+    }
+  }
+}
+
 extension AffordablStringifier on Affordability {
   String stringify() {
     switch (this) {
@@ -42,12 +57,26 @@ extension AffordablStringifier on Affordability {
   }
 }
 
+extension AffordablParser on String {
+  Affordability parseAffordability() {
+    switch (this) {
+      case 'Affordable':
+        return Affordability.affordable;
+      case 'Pricey':
+        return Affordability.pricey;
+      case 'Luxurious':
+        return Affordability.luxurious;
+      default:
+        return Affordability.affordable;
+    }
+  }
+}
+
 class MealDatabase {
   MealDatabase({
     required this.id,
     required this.categories,
     required this.title,
-    required this.image,
     required this.ingredients,
     required this.steps,
     required this.duration,
@@ -64,7 +93,8 @@ class MealDatabase {
   bool approved = false;
   final List<String> categories;
   final String title;
-  final File image;
+  String imageURL = "";
+  File? image;
   final List<String> ingredients;
   final List<String> steps;
   final int duration;
@@ -76,4 +106,10 @@ class MealDatabase {
   final bool isVegetarian;
   final String creatorID;
 
+  void setImageURL(String url) {
+    imageURL = url;
+  }
+  void setImage(File file) {
+    image = file;
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:meals_app/models/meal_database.dart';
 import 'package:meals_app/widgets/meal_item.dart';
 
-import '../models/meal.dart';
 import 'meal_detail.dart';
 
 class MealScreen extends StatelessWidget {
@@ -12,9 +12,9 @@ class MealScreen extends StatelessWidget {
       });
 
   final String? title;
-  final List<Meal> meals;
+  final List<MealDatabase> meals;
 
-  void _selectMeal(BuildContext context, Meal meal) {
+  void _selectMeal(BuildContext context, MealDatabase meal) {
     Navigator.push(
         context,
         MaterialPageRoute(

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:meals_app/models/meal.dart';
+import 'package:meals_app/models/meal_database.dart';
 import 'package:meals_app/providers/favorites_provider.dart';
 
 class MealDetailScreen extends ConsumerWidget {
   const MealDetailScreen({super.key, required this.meal});
 
-  final Meal meal;
+  final MealDatabase meal;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +35,7 @@ class MealDetailScreen extends ConsumerWidget {
       body: ListView(
         children: [
           Image.network(
-            meal.imageUrl,
+            meal.imageURL,
             height: 300,
             width: double.infinity,
             fit: BoxFit.cover,

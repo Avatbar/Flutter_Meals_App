@@ -18,7 +18,7 @@ class NewMealForm extends StatefulWidget {
 }
 
 class _NewMealFormState extends State<NewMealForm> {
-  final List<bool> selectedCategories = [];
+  List<bool> selectedCategories = [];
   final Map<Category, bool> selectedCategoriesMap = {};
   String title = "";
   List<String> ingredients = [];
@@ -34,6 +34,10 @@ class _NewMealFormState extends State<NewMealForm> {
 
   void _pickedImage(File pickedImage) {
     _userImageFile = pickedImage;
+  }
+
+  void _setSelectedCategories(List<bool> selected) {
+    selectedCategories = selected;
   }
 
   bool _hasImage() {
@@ -66,7 +70,7 @@ class _NewMealFormState extends State<NewMealForm> {
     return true;
   }
 
-  void _mapCategoires() async {
+  Future<List<String>> _mapCategoires() async {
     final categories = await Utility().getCategoriesFromDatabase();
     if (categories.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -77,7 +81,7 @@ class _NewMealFormState extends State<NewMealForm> {
       setState(() {
         isLoading = false;
       });
-      return;
+      return [];
     }
 
     final Map<int, Category> categoryIntMap = {};
@@ -88,6 +92,15 @@ class _NewMealFormState extends State<NewMealForm> {
     for (int i = 0; i < selectedCategories.length; i++) {
       selectedCategoriesMap[categoryIntMap[i]!] = selectedCategories[i];
     }
+
+    List<String> selectedCategoriesList = [];
+    selectedCategoriesMap.forEach((key, value) {
+      if (value) {
+        selectedCategoriesList.add(key.id);
+      }
+    });
+
+    return selectedCategoriesList;
   }
 
   Complexity getComplexity() {
@@ -129,19 +142,9 @@ class _NewMealFormState extends State<NewMealForm> {
       return;
     }
 
-    _mapCategoires();
-
-    final selectedCategoriesList = <String>[];
-    selectedCategoriesMap.forEach((key, value) {
-      if (value) {
-        selectedCategoriesList.add(key.id);
-      }
-    });
-
     final newMeal = MealDatabase(id: "new",
-      categories: selectedCategoriesList,
+      categories: await _mapCategoires(),
       title: title,
-      image: _userImageFile!,
       ingredients: ingredients,
       steps: steps,
       duration: duration,
@@ -152,8 +155,18 @@ class _NewMealFormState extends State<NewMealForm> {
       isVegan: false,
       isVegetarian: false,
       creatorID: FirebaseAuth.instance.currentUser!.uid,);
+    newMeal.setImage(_userImageFile!);
 
-    Utility().uploadMeal(newMeal);
+    if (await Utility().uploadMeal(newMeal)){
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Something went wrong."),
+        ),
+      );
+      Navigator.of(context).pop();
+    }
 
     setState(() {
       isLoading = false;
@@ -172,6 +185,7 @@ class _NewMealFormState extends State<NewMealForm> {
         }
         return SingleChildScrollView(
           child: Form(
+            key: _formKey,
             child: Column(
               children: [
                 UserImagePicker(imagePickFn: _pickedImage),
@@ -225,17 +239,17 @@ class _NewMealFormState extends State<NewMealForm> {
                       return "Please enter ingredients.";
                     }
                     if (value
-                        .split(",")
+                        .split("\n")
                         .length < 3) {
                       return "Please enter at least 3 ingredients.";
                     }
-                    if (!value.contains(',')) {
-                      return "Please enter ingredients separated by commas.";
+                    if (!value.contains('\n')) {
+                      return "Please enter ingredients separated by enters.";
                     }
                     return null;
                   },
                   onSaved: (value) {
-                    ingredients = value!.split(",");
+                    ingredients = value!.split("\n");
                   },
                 ),
                 TextFormField(
@@ -322,7 +336,8 @@ class _NewMealFormState extends State<NewMealForm> {
                 ),
                 CategoriesButton(
                     availableCategories: snapshot.data as List<Category>,
-                    selectedCategories: selectedCategories),
+                    selectedCategories: selectedCategories,
+                    setCategories: _setSelectedCategories,),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submit,

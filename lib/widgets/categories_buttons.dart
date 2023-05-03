@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import '../models/category.dart';
 
 class CategoriesButton extends StatefulWidget {
-  const CategoriesButton(
+  CategoriesButton(
       {super.key,
       required this.availableCategories,
-      required this.selectedCategories});
+      required this.selectedCategories,
+      required this.setCategories});
 
   final List<Category> availableCategories;
   final List<bool> selectedCategories;
+
+  void Function (List<bool> selectedCategories) setCategories;
 
   @override
   State<CategoriesButton> createState() => _CategoriesButtonState();
@@ -26,8 +29,7 @@ class _CategoriesButtonState extends State<CategoriesButton> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.selectedCategories);
-    print(widget.availableCategories.length);
+    widget.setCategories(widget.selectedCategories);
     return Column(
       children: [
         for (int i = 0; i < widget.availableCategories.length; i += 4)
