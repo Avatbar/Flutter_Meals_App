@@ -4,27 +4,25 @@ import 'package:meals_app/models/category.dart';
 
 class Utility {
   Future<List<Category>> getCategoriesFromDatabase() async {
-    await FirebaseFirestore.instance
+    final snapshot = await FirebaseFirestore.instance
         .collection('Categories')
         .orderBy('title')
-        .get()
-        .then((snapshot) {
-      final categories = <Category>[];
+        .get();
 
-      for (var doc in snapshot.docs) {
-        categories.add(Category(
-          id: doc.id,
-          title: doc['title'],
-          color: Color(int.parse(doc['color'])),
-        ));
-      }
+    final categories = <Category>[];
 
-      if (categories.isEmpty) {
-        return <Category>[];
-      }
+    for (var doc in snapshot.docs) {
+      categories.add(Category(
+        id: doc.id,
+        title: doc['title'],
+        color: Color(int.parse(doc['color'])),
+      ));
+    }
 
-      return categories;
-    });
-    return <Category>[];
+    if (categories.isEmpty) {
+      return <Category>[];
+    }
+
+    return categories;
   }
 }
