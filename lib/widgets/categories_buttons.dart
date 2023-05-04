@@ -32,34 +32,37 @@ class _CategoriesButtonState extends State<CategoriesButton> {
     widget.setCategories(widget.selectedCategories);
     return Column(
       children: [
-        for (int i = 0; i < widget.availableCategories.length; i += 4)
-          ToggleButtons(
-              onPressed: (int index) {
-                index += i;
-                setState(() {
-                  widget.selectedCategories[index] =
-                      !widget.selectedCategories[index];
-                });
-              },
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
-              selectedBorderColor: Colors.green[700],
-              selectedColor: Colors.white,
-              fillColor: Colors.green[200],
-              color: Colors.green[400],
-              constraints: const BoxConstraints(
-                minHeight: 40.0,
-                minWidth: 80.0,
-              ),
-              isSelected: (i + 4) < widget.selectedCategories.length
-                  ? widget.selectedCategories.sublist(i, i + 4)
-                  : widget.selectedCategories.sublist(i),
-              children: <Widget>[
-                for (final category
-                    in (i + 4) < widget.availableCategories.length
-                        ? widget.availableCategories.sublist(i, i + 4)
-                        : widget.availableCategories.sublist(i))
-                  Text(category.title),
-              ]),
+        for (int i = 0; i < widget.availableCategories.length; i += 3)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: ToggleButtons(
+                onPressed: (int index) {
+                  index += i;
+                  setState(() {
+                    widget.selectedCategories[index] =
+                        !widget.selectedCategories[index];
+                  });
+                },
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                selectedBorderColor: Colors.green[700],
+                selectedColor: Colors.white,
+                fillColor: Colors.green[200],
+                color: Colors.green[400],
+                constraints: const BoxConstraints(
+                  minHeight: 40.0,
+                  minWidth: 100.0,
+                ),
+                isSelected: (i + 3) < widget.selectedCategories.length
+                    ? widget.selectedCategories.sublist(i, i + 3)
+                    : widget.selectedCategories.sublist(i),
+                children: <Widget>[
+                  for (final category
+                      in (i + 3) < widget.availableCategories.length
+                          ? widget.availableCategories.sublist(i, i + 3)
+                          : widget.availableCategories.sublist(i))
+                    Text(category.title),
+                ]),
+          ),
       ],
     );
   }

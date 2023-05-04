@@ -44,6 +44,7 @@ class Utility {
       creatorID: doc['creatorID'],
     );
     actMeal.setImageURL(doc['image']);
+    actMeal.approved = doc['approved'];
     return actMeal;
   }
 
@@ -212,4 +213,27 @@ class Utility {
     }
   }
 
+  Future<List<MealDatabase>> getFavoriteMealsFromDatabase() async {
+    final favoriteSnapshot = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+
+    final favoriteMealsId = <String>[];
+
+    for (var doc in favoriteSnapshot['userFavoriteMeals']){
+      favoriteMealsId.add(doc);
+    }
+
+    if (favoriteMealsId.isEmpty) {
+      return <MealDatabase>[];
+    }
+
+    final mealSnapshot = await FirebaseFirestore.instance
+        .collection('Meals')
+        .where('id', whereIn: favoriteMealsId)
+        .get();
+
+    return getMealsFromSnapshot(mealSnapshot);
+  }
 }
