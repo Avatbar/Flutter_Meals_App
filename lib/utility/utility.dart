@@ -74,6 +74,7 @@ class Utility {
     final activeFilters = await getActiveFilters();
     final snapshot = await FirebaseFirestore.instance
         .collection('Meals')
+        .where('approved', isEqualTo: true)
         .where('isGlutenFree',
             isEqualTo: activeFilters[Filter.glutenFree]! ? true : null)
         .where('isLactoseFree',
