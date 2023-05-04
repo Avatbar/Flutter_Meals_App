@@ -10,14 +10,15 @@ import 'categories_buttons.dart';
 import 'complex_afford_buttons.dart';
 import 'package:meals_app/pickers/user_image_picker.dart';
 
-class NewMealForm extends StatefulWidget {
-  const NewMealForm({super.key});
+class EditMealForm extends StatefulWidget {
+  const EditMealForm({super.key, required this.meal});
+  final MealDatabase meal;
 
   @override
-  State<NewMealForm> createState() => _NewMealFormState();
+  State<EditMealForm> createState() => _EditMealFormState();
 }
 
-class _NewMealFormState extends State<NewMealForm> {
+class _EditMealFormState extends State<EditMealForm> {
   List<bool> selectedCategories = [];
   final Map<Category, bool> selectedCategoriesMap = {};
   String title = "";
@@ -138,11 +139,11 @@ class _NewMealFormState extends State<NewMealForm> {
       isLoading = true;
     });
 
-    if (!_hasImage() || !_hasCategories()) {
+    if (!_hasCategories()) {
       return;
     }
 
-    final newMeal = MealDatabase(id: "new",
+    final newMeal = MealDatabase(id: widget.meal.id,
       categories: await _mapCategoires(),
       title: title,
       ingredients: ingredients,
@@ -155,9 +156,11 @@ class _NewMealFormState extends State<NewMealForm> {
       isVegan: false,
       isVegetarian: false,
       creatorID: FirebaseAuth.instance.currentUser!.uid,);
-    newMeal.setImage(_userImageFile!);
+    if (_hasImage()) {
+      newMeal.setImage(_userImageFile!);
+    }
 
-    if (await Utility().uploadMeal(newMeal)){
+    if (await Utility().editMeal(newMeal)){
       Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,7 +191,7 @@ class _NewMealFormState extends State<NewMealForm> {
             key: _formKey,
             child: Column(
               children: [
-                UserImagePicker(imagePickFn: _pickedImage,),
+                UserImagePicker(imagePickFn: _pickedImage, editMode: true, mealImage: widget.meal.imageURL,),
                 const SizedBox(
                   height: 30,
                 ),
@@ -197,6 +200,7 @@ class _NewMealFormState extends State<NewMealForm> {
                   height: 20,
                 ),
                 TextFormField(
+                  initialValue: widget.meal.title,
                   style: Theme
                       .of(context)
                       .textTheme
@@ -220,6 +224,7 @@ class _NewMealFormState extends State<NewMealForm> {
                   textInputAction: TextInputAction.next,
                 ),
                 TextFormField(
+                  initialValue: widget.meal.ingredients.join("\n"),
                   style: Theme
                       .of(context)
                       .textTheme
@@ -253,6 +258,7 @@ class _NewMealFormState extends State<NewMealForm> {
                   },
                 ),
                 TextFormField(
+                  initialValue: widget.meal.steps.join("\n"),
                   style: Theme
                       .of(context)
                       .textTheme
@@ -286,6 +292,7 @@ class _NewMealFormState extends State<NewMealForm> {
                   },
                 ),
                 TextFormField(
+                  initialValue: widget.meal.duration.toString(),
                   style: Theme
                       .of(context)
                       .textTheme
@@ -335,13 +342,13 @@ class _NewMealFormState extends State<NewMealForm> {
                   height: 20,
                 ),
                 CategoriesButton(
-                    availableCategories: snapshot.data as List<Category>,
-                    selectedCategories: selectedCategories,
-                    setCategories: _setSelectedCategories,),
+                  availableCategories: snapshot.data as List<Category>,
+                  selectedCategories: selectedCategories,
+                  setCategories: _setSelectedCategories,),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submit,
-                  child: const Text("Add Meal"),
+                  child: const Text("Edit Meal"),
                 ),
               ],
             ),

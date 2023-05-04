@@ -3,14 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meals_app/providers/meals_provider.dart';
 
-import '../screens/tabs.dart';
-
 enum Filter {
   glutenFree,
   lactoseFree,
   vegetarian,
   vegan,
 }
+
+const kInitialFilter = {
+  Filter.glutenFree: false,
+  Filter.lactoseFree: false,
+  Filter.vegan: false,
+  Filter.vegetarian: false,
+};
 
 
 class FilterNotifier extends StateNotifier<Map<Filter, bool>> {

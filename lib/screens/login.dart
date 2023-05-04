@@ -119,6 +119,16 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: const Text("Wrong password or email"),
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .error,
+        ),
+      );
       setState(() {
         isLoading = false;
       });

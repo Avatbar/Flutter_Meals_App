@@ -11,13 +11,7 @@ import 'package:meals_app/widgets/main_drawer.dart';
 import 'package:meals_app/providers/filters_provider.dart';
 
 import '../models/meal_database.dart';
-
-const kInitialFilter = {
-  Filter.glutenFree: false,
-  Filter.lactoseFree: false,
-  Filter.vegan: false,
-  Filter.vegetarian: false,
-};
+import '../utility/utility.dart';
 
 class TabsScreen extends ConsumerStatefulWidget {
   const TabsScreen({super.key});
@@ -47,14 +41,14 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     Widget activePage = FutureBuilder(
-        future: ref.watch(filteredMealsProvider),
+        future: Utility().getFilteredMealsFromDatabase(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
-          print(snapshot.data.toString());
+          print("snapshot.data: ${snapshot.data}");
           return CategoriesScreen(
             availableMeals: snapshot.data as List<MealDatabase>,
           );
@@ -89,7 +83,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddMealScreen(),
+              builder: (context) => const AddMealScreen(isAddMeal: true,),
             ),
           );
         },

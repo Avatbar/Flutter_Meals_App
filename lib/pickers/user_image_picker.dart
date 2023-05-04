@@ -9,9 +9,11 @@ import 'dart:io';
 // final pickedImageFile = File(pickedImage.path); // requires import 'dart:io';
 
 class UserImagePicker extends StatefulWidget {
-  const UserImagePicker({super.key, required this.imagePickFn});
+  const UserImagePicker({super.key, required this.imagePickFn, this.editMode = false, this.mealImage = ""});
 
   final void Function(File pickedImage) imagePickFn;
+  final bool editMode;
+  final String mealImage;
 
   @override
   State<UserImagePicker> createState() => _UserImagePickerState();
@@ -40,6 +42,26 @@ class _UserImagePickerState extends State<UserImagePicker> {
   @override
   Widget build(BuildContext context) {
     if (!_imagePicked) {
+      if (widget.editMode) {
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Image(
+              image: NetworkImage(widget.mealImage),
+              fit: BoxFit.cover,
+              height: 220,
+              width: double.infinity,
+              alignment: Alignment.center,
+            ),
+            IconButton(
+              onPressed: _pickImage,
+              icon: const Icon(Icons.add_a_photo),
+              iconSize: 90,
+              color: Colors.white38,
+            ),
+          ],
+        );
+      }
       return IconButton(
         onPressed: _pickImage,
         icon: const Icon(Icons.add_a_photo),

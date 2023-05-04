@@ -3,7 +3,12 @@ import 'package:meals_app/models/meal_database.dart';
 
 import '../utility/utility.dart';
 
-final mealsProvider = Provider((ref) async {
-  final List<MealDatabase> availableMeals = await Utility().getMealsFromDatabase();
-  return availableMeals;
+class MealsNotifier extends StateNotifier<List<MealDatabase>> {
+  MealsNotifier() : super([]) {
+    Utility().getMealsFromDatabase().then((value) => state = value);
+  }
+}
+
+final mealsProvider = StateNotifierProvider<MealsNotifier, List<MealDatabase>>((ref) {
+  return MealsNotifier();
 });

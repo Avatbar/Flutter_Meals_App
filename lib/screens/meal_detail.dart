@@ -18,18 +18,30 @@ class MealDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(meal.title),
         actions: [
-          IconButton(
-            onPressed: () {
-              final wasAdded = ref
-                  .read((favoriteMealsProvider.notifier))
-                  .toggleMealFavoriteStatus(meal);
-              ScaffoldMessenger.of(context).clearSnackBars();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(wasAdded ? "Meal added as a favorite." : "Meal removed."),
-              ));
-            },
-            icon: Icon(isFavorite ? Icons.star : Icons.star_border),
-          )
+          if (meal.approved)
+            IconButton(
+              onPressed: () {
+                final wasAdded = ref
+                    .read((favoriteMealsProvider.notifier))
+                    .toggleMealFavoriteStatus(meal);
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      wasAdded ? "Meal added as a favorite." : "Meal removed."),
+                ));
+              },
+              icon: Icon(isFavorite ? Icons.star : Icons.star_border),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "Not Approved",
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+              ),
+            ),
         ],
       ),
       body: ListView(
